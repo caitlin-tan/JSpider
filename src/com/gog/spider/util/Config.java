@@ -1,50 +1,15 @@
 package com.gog.spider.util;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 public class Config {
-    private static Map<String, Properties> configs = new HashMap<String, Properties>();
-    private static final String DEFAULT_CONFIG_NAME = "system.properties";
+    private static Map<String, ResourceBundle> configs = new HashMap<String, ResourceBundle>();
+    private static final String DEFAULT_CONFIG_NAME = "system";
 
-    public Config(String configName) {
-//        String filename = "resources/sytem.properties";
-        Properties prop = new Properties();
-        try {
-            prop.load(Config.class.getClassLoader().getResourceAsStream(configName));
-
-            //读取属性文件a.properties
-            InputStream in = new BufferedInputStream(new FileInputStream("a.properties"));
-            prop.load(in);     ///加载属性列表
-            Iterator<String> it = prop.stringPropertyNames().iterator();
-
-            Properties props = new Properties();
-            String h = props.getProperty("v");
-
-            while (it.hasNext()) {
-                String key = it.next();
-                System.out.println(key + ":" + prop.getProperty(key));
-            }
-            in.close();
-
-            ///保存属性到b.properties文件
-            FileOutputStream outputFile = new FileOutputStream("b.properties", true);//true表示追加打开
-            prop.setProperty("phone", "10086");
-            prop.store(outputFile, "The New properties file");
-            outputFile.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    public static Properties getConfig(String configName) {
+    private static ResourceBundle getConfig(String configName) {
         if (configName.isEmpty()) {
             configName = DEFAULT_CONFIG_NAME;
         }
@@ -53,28 +18,44 @@ public class Config {
             return configs.get(configName);
         }
 
-        return loadConfig(configName);
+        ResourceBundle config = loadConfig(configName);
+        configs.put(configName, config);
+        return config;
     }
 
-    private static Properties loadConfig(String configName) {
-        Properties prop = null;
+    private static ResourceBundle loadConfig(String configName) {
+        ResourceBundle config = null;
         try {
-            prop = new Properties();
-            prop.load(Config.class.getClassLoader().getResourceAsStream(configName));
-        } catch (IOException e) {
+            config = ResourceBundle.getBundle(configName);
+        } catch (MissingResourceException e) {
             e.printStackTrace();
         }
 
-        return prop;
+        return config;
     }
 
-    private String getValue(String key) {
-        // TODO
-        return "";
+    public static String getStringByKey(String configName, String key) {
+        ResourceBundle config = getConfig(configName);
+
+        if (config == null) {
+            return null;
+        }
+
+        return config.getString(key);
     }
 
-    public String getStringValue(String key) {
-        // TODO
-        return "";
+    public static int getIntByKey(String configName, String key) {
+        String value = getStringByKey(configName, key);
+        int intValue = 0;
+
+        try {
+            Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        return intValue;
     }
+
+    // TODO: 根据不同的环境，加载不同的配置
 }
