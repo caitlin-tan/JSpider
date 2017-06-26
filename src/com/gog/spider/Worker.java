@@ -1,44 +1,55 @@
 package com.gog.spider;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import com.gog.spider.util.Config;
 
-public abstract class Worker {
-    public String baseUrl = Config.getStringByKey("system", "qchui_base_url");
+public abstract class Worker implements Runnable {
+    protected String baseUrl = Config.getStringByKey("system", "qchui_base_url");
+    public ArrayList<String> pageLinks;
+    protected int currentPage = 1;
 
     public abstract void configBaseUrl();
 
     public Worker() {
         configBaseUrl();
+        pageLinks = getPageLinks();
     }
-
+    
     public void run() {
-        // Èë¿Ú·½·¨£¬¿ªÊ¼²É¼¯Êý¾Ý
-        // 1. Ñ­»·»ñÈ¡ÏÂÒ³Á´½Ó
+        // 1. Ñ­ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½
 
-        // 2. »ñÈ¡ documents£¬ÌáÈ¡ÓÐÓÃÊý¾Ý
+        // 2. ï¿½ï¿½È¡ documentsï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Document doc = null;
         try {
-            doc = Jsoup.connect(baseUrl).get();
+            doc = Jsoup.connect(pageLinks.get(currentPage - 1)).get();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            // TODO: use log4js
             e.printStackTrace();
             return;
         }
 
-        Entity entity = parseDocument(doc);
+        ArrayList<Entity> entities = parseDocument(doc);
 
-        // 3. ±£´æÊý¾Ý
-        saveEntity(entity);
+        // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        batchSaveEntities(entities);
     }
+    
+    public abstract ArrayList<String> getPageLinks();
 
-    public abstract Entity parseDocument(Document doc);
+    public abstract ArrayList<Entity> parseDocument(Document doc);
 
-    public void saveEntity(Entity entity) {
-        entity.insert();
+    public void batchSaveEntities(ArrayList<Entity> entities) {
+    	for (Entity entity : entities) {
+        	entity.add();
+        }
+    }
+    
+    public void setCurrentPage(int currentPage) {
+    	this.currentPage = currentPage;
     }
 }

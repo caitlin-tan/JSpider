@@ -38,7 +38,8 @@ public class QchuiProduct extends Entity {
         this.saleReviewCount = saleReviewCount;
     }
 
-    public int insert() {
+    public int add() {
+    	// TODO:  entityId 相同时可以更新
         int id = 0;
         String sql =
                 "insert into " + tableName

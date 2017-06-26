@@ -20,7 +20,7 @@ public abstract class Entity {
         init();
     }
 
-    public abstract int insert();
+    public abstract int add();
 
     public void setEntityId(int entityId) {
         this.entityId = entityId;
