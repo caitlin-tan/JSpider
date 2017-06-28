@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gog.spider.mapper.qchuiProduct">
+    <select id="getOne"
+        resultType="QchuiProduct">
+        SELECT * FROM product ORDER BY id DESC LIMIT 1;
+    </select>
+
+    <insert id="batchInsert" parameterType="QchuiProduct">
+      INSERT INTO product (
+        entityId,
+        name,
+        href,
+        currentPrice,
+        originalPrice,
+        description,
+        saleCount,
+        saleReviewCount)
+      VALUES
+      <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.entityId},
+        #{item.name},
+        #{item.href},
+        #{item.currentPrice},
+        #{item.originalPrice},
+        #{item.description},
+        #{item.saleCount},
+        #{item.saleReviewCount})
+      </foreach>
+      ON DUPLICATE KEY UPDATE
+        name = VALUES(name),
+        href = VALUES(href),
+        currentPrice = VALUES(currentPrice),
+        originalPrice = VALUES(originalPrice),
+        description = VALUES(description),
+        saleCount = VALUES(saleCount),
+        saleReviewCount = VALUES(saleReviewCount),
+        updatedAt = NOW()
+    </insert>
+</mapper>
