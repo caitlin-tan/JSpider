@@ -20,10 +20,10 @@ public class QchuiProduct extends Worker {
 
     @Override
     public ArrayList<Entity> parseDocument(Document doc) {
-    	ArrayList<Entity> products = new ArrayList<Entity>();
+        ArrayList<Entity> products = new ArrayList<Entity>();
         for (Element element : doc.select("div .deal_list_box >ul >li >div")) {
-        	com.gog.spider.entity.QchuiProduct product = new com.gog.spider.entity.QchuiProduct();
-        	// Get product href
+            com.gog.spider.entity.QchuiProduct product = new com.gog.spider.entity.QchuiProduct();
+            // Get product href
             String href = element.select(".deal_img >a").attr("abs:href");
             product.setHref(href);
 
@@ -66,7 +66,7 @@ public class QchuiProduct extends Worker {
             // Get product sale count
             String saleReviewCount = element.select(".deal_extra .review_count >i").text();
             product.setSaleReviewCount(Integer.parseInt(saleReviewCount));
-            
+
             products.add(product);
         }
 
@@ -78,40 +78,40 @@ public class QchuiProduct extends Worker {
         baseUrl = Config.getStringByKey("system", "qchui_product_url");
     }
 
-	@Override
-	public ArrayList<String> getPageLinks() {
-		Document doc = null;
+    @Override
+    public ArrayList<String> getPageLinks() {
+        Document doc = null;
         try {
             doc = Jsoup.connect(baseUrl).get();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        
+
         ArrayList<String> pageLinks = new ArrayList<String>();
-		int pageCount = 1;
-		
-		Element lastPageElement = null;
+        int pageCount = 1;
+
+        Element lastPageElement = null;
         for (Element element : doc.select("div .deal_list_box .pages >a")) {
-        	System.out.println(element.toString());
-        	System.out.println(element.text());
-        	if (element.text() != "最后一页") {
-        		continue;
-        	}
-        	
-        	lastPageElement = element;        	
+            System.out.println(element.toString());
+            System.out.println(element.text());
+            if (element.text() != "最后一页") {
+                continue;
+            }
+
+            lastPageElement = element;
         }
-        
+
         String lastPageLink = lastPageElement.attr("abs:href");
         Pattern pattern = Pattern.compile("\\?p=(\\d+)?$");
         Matcher matcher = pattern.matcher(lastPageLink);
         if (matcher.find()) {
-        	pageCount = Integer.parseInt(matcher.group(1));
+            pageCount = Integer.parseInt(matcher.group(1));
         }
-        
+
         for (int index = 1; index <= pageCount; index++) {
-        	pageLinks.add(baseUrl + "?p=" + index);
+            pageLinks.add(baseUrl + "?p=" + index);
         }
-		return pageLinks;
-	}
+        return pageLinks;
+    }
 }

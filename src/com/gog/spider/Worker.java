@@ -19,11 +19,9 @@ public abstract class Worker implements Runnable {
         configBaseUrl();
         pageLinks = getPageLinks();
     }
-    
-    public void run() {
-        // 1. ѭ����ȡ��ҳ����
 
-        // 2. ��ȡ documents����ȡ��������
+    public void run() {
+
         Document doc = null;
         try {
             doc = Jsoup.connect(pageLinks.get(currentPage - 1)).get();
@@ -35,21 +33,20 @@ public abstract class Worker implements Runnable {
 
         ArrayList<Entity> entities = parseDocument(doc);
 
-        // 3. ��������
         batchSaveEntities(entities);
     }
-    
+
     public abstract ArrayList<String> getPageLinks();
 
     public abstract ArrayList<Entity> parseDocument(Document doc);
 
     public void batchSaveEntities(ArrayList<Entity> entities) {
-    	for (Entity entity : entities) {
-        	entity.add();
+        for (Entity entity : entities) {
+            entity.add();
         }
     }
-    
+
     public void setCurrentPage(int currentPage) {
-    	this.currentPage = currentPage;
+        this.currentPage = currentPage;
     }
 }

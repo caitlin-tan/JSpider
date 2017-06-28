@@ -39,7 +39,7 @@ public class QchuiProduct extends Entity {
     }
 
     public int add() {
-    	// TODO: Â entityId ç›¸åŒæ—¶å¯ä»¥æ›´æ–°
+        // TODO: entityId ÔÚÊı¾İ¿âÖĞÒÑ´æÔÚÊ±£¬¸üĞÂ¸ÃÌõÊı¾İ
         int id = 0;
         String sql =
                 "insert into " + tableName
